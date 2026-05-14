@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import API from "../api/axios";
 import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export default function Login() {
@@ -21,7 +21,6 @@ export default function Login() {
       if (res.data.user.role === "AGENT") navigate("/agent");
       if (res.data.user.role === "ADMIN") navigate("/admin");
     } catch (err) {
-      // log so devs can inspect in console
       console.error("Login error", err);
       toast.error(err.response?.data?.message || "Login failed");
     }
@@ -42,8 +41,11 @@ export default function Login() {
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
-        <button>Login</button>
+        <button type="submit">Login</button>
       </form>
+      <p>
+        Don't have an account? <Link to="/register">Register here</Link>
+      </p>
     </div>
   );
 }
