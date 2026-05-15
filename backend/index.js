@@ -18,7 +18,14 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (!origin) return callback(null, true);
+        
+        // Allow all Vercel preview deployments for your project
+        if (origin.includes('smart-complaint-system') && origin.includes('vercel.app')) {
+            return callback(null, true);
+        }
+        
+        if (allowedOrigins.includes(origin)) {
             return callback(null, true);
         }
 
@@ -26,8 +33,6 @@ app.use(cors({
     },
     credentials: true,
 }));
-connectDB();
-
 // mount auth routes (support both /api/users and /api/auth)
 app.use('/api/users', require('./routes/authRoutes'));
 app.use('/api/auth', require('./routes/authRoutes'));
