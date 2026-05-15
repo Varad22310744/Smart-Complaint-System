@@ -9,8 +9,23 @@ dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 const app=express();
 app.use(express.json());
-// allow common local frontend dev origins (Vite can auto-switch ports)
-app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:5174'], credentials: true }));
+
+const allowedOrigins = [
+    process.env.FRONTEND_URL,
+    'http://localhost:5173',
+    'http://localhost:5174',
+].filter(Boolean);
+
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+
+        return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
+    credentials: true,
+}));
 connectDB();
 
 // mount auth routes (support both /api/users and /api/auth)
